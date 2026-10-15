@@ -5,8 +5,8 @@
   "author": {
     "name": "rj8b0000"
   },
-  "homepage": "https://github.com/rj8b0000/claude-foundry",
-  "repository": "https://github.com/rj8b0000/claude-foundry",
+  "homepage": "https://github.com/rj8b0000/claude-foundary",
+  "repository": "https://github.com/rj8b0000/claude-foundary",
   "license": "MIT",
   "keywords": ["setup", "profiles", "spec-driven", "dotnet", "nextjs", "code-review", "testing"]
 }

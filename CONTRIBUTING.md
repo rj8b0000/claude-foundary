@@ -11,8 +11,8 @@ See the "Repository layout" section of [README.md](./README.md). The short versi
 ## Development setup
 
 ```bash
-git clone <this-repo>
-cd claude-foundry
+git clone https://github.com/rj8b0000/claude-foundary.git
+cd claude-foundary
 npm test                    # runs the full suite (node --test tests/*.test.js)
 npm run validate:profiles   # schema-validates every profile in the library
 ```

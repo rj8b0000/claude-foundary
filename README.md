@@ -18,18 +18,16 @@ The core loop works end to end: detect → compose → preview → approve → w
 
 ## Relationship to Claude Code
 
-ClaudeFoundry is distributed as a single Claude Code **plugin** (`claude-foundry`) through a GitHub-hosted **marketplace** defined in this same repository. It uses Claude Code's native skills, agents, and plugin manifest formats — it does not invent a parallel configuration system.
+ClaudeFoundry is distributed as a single Claude Code **plugin** (`foundry-toolkit`) through a GitHub-hosted **marketplace** defined in this same repository. It uses Claude Code's native skills, agents, and plugin manifest formats — it does not invent a parallel configuration system.
 
 ## Installation
 
-> This repository isn't published yet — see [RELEASE_CHECKLIST.md](./RELEASE_CHECKLIST.md), including an open naming question, before these commands will work against a real repository.
-
 ```bash
-claude plugin marketplace add rj8b0000/claude-foundry
-claude plugin install foundry-toolkit@claude-foundry --scope user
+claude plugin marketplace add rj8b0000/claude-foundary
+claude plugin install foundry-toolkit@claude-foundary --scope user
 ```
 
-The plugin is named `foundry-toolkit` rather than `claude-foundry` because Claude Code reserves the `claude-` prefix for Anthropic's own plugins; the project and repository are still called ClaudeFoundry.
+The plugin is named `foundry-toolkit` rather than `claude-foundry` because Claude Code reserves the `claude-` prefix for Anthropic's own plugins. The repository itself is named **`claude-foundary`** (note the spelling) — a typo made when the repo was created and kept intentionally rather than renamed after the fact; the project's display name is still "ClaudeFoundry." The marketplace's own identifier (the part after `@` above) matches the repo name exactly.
 
 Default install scope is **user** (available in every project on your machine). Pass `--scope project` or `--scope local` to install differently.
 
@@ -97,14 +95,14 @@ Profiles can be overridden, excluded, or supplemented with your own company-spec
 ## Updating and uninstalling
 
 ```bash
-claude plugin update foundry-toolkit@claude-foundry
-claude plugin uninstall foundry-toolkit@claude-foundry
+claude plugin update foundry-toolkit@claude-foundary
+claude plugin uninstall foundry-toolkit@claude-foundary
 ```
 
 ## Repository layout
 
 ```
-claude-foundry/
+claude-foundary/
 ├── .claude-plugin/marketplace.json
 ├── plugins/foundry-toolkit/
 │   ├── .claude-plugin/plugin.json
@@ -124,7 +122,7 @@ Everything the plugin needs at runtime (`schemas/`, `scripts/`, `profiles/`, the
 
 ## Troubleshooting
 
-- **"Plugin not found" or a reserved-name error during install** — the installable plugin is named `foundry-toolkit`, not `claude-foundry` (Claude Code reserves the `claude-` prefix for official Anthropic plugins). Use `foundry-toolkit@claude-foundry` as the install id; `claude-foundry` is only the marketplace/repo name.
+- **"Plugin not found" or a reserved-name error during install** — the installable plugin is named `foundry-toolkit`, not `claude-foundry` (Claude Code reserves the `claude-` prefix for official Anthropic plugins). Use `foundry-toolkit@claude-foundary` as the install id (note: the marketplace/repo name is spelled `claude-foundary`, not `claude-foundry`).
 - **`validate-profile` fails with field errors** — the message names the exact field and problem (e.g. `missing required field "schemaVersion"`); fix the YAML and re-run. It never partially applies an invalid profile.
 - **`plan` shows a path in `compositionConflicts`** — two of your *selected* profiles disagree on the same file or rule id. This isn't a bug to work around; drop one of the profiles, or edit one so they no longer overlap, and re-plan.
 - **`apply` skipped a file you expected to be written** — check its status in the preceding `plan` output. `conflict-pre-existing-file` and `user-edited` are never written without an explicit `--force <path>`; `orphaned` is never written or deleted at all.
@@ -138,11 +136,11 @@ Everything the plugin needs at runtime (`schemas/`, `scripts/`, `profiles/`, the
 - Personal/company-wide preference persistence doesn't exist yet — setup asks fresh each time.
 - The corrected plugin layout (engine inside `plugins/foundry-toolkit/`) has been verified for local installs; it hasn't yet been verified against an actual published GitHub marketplace, since none exists yet.
 - The optional Windows CMD installer wrapper is not yet built; when it is, it will only have been tested on Windows, since that's the only environment available here.
-- Not yet published to any marketplace; installation commands above assume a future `rj8b0000/claude-foundry` repository, pending the naming decision in `RELEASE_CHECKLIST.md`.
+- Published at `github.com/rj8b0000/claude-foundary` (note the spelling — see Installation above). A real git-hosted `marketplace add`/`install` from this URL hasn't been re-verified since the initial push; see `RELEASE_CHECKLIST.md`.
 
 ## License
 
-MIT — see [LICENSE](./LICENSE). Copyright holder is a placeholder pending confirmation.
+MIT — see [LICENSE](./LICENSE).
 
 ## Contributing
 

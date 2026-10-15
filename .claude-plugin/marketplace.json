@@ -1,6 +1,6 @@
 {
   "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
-  "name": "claude-foundry",
+  "name": "claude-foundary",
   "description": "ClaudeFoundry: technology-aware profiles, reusable coding standards, and a spec-driven setup workflow for Claude Code projects. Independent community project, not an official Anthropic product.",
   "owner": {
     "name": "rj8b0000"
