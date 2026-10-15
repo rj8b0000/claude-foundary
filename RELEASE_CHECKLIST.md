@@ -27,16 +27,19 @@ When the repository was created, it was named `claude-foundary` (an extra "a") r
 ## 2. Repository setup
 
 - [x] Create the GitHub repository — created as `rj8b0000/claude-foundary` (see 0.1 above)
-- [ ] Add the SSH remote and push (in progress — SSH identity confirmed authenticating as `rj8b0000` via the `github-personal` host alias)
-- [ ] Confirm `plugins/foundry-toolkit/node_modules/` actually pushed (it's intentionally un-ignored — see `.gitignore` — but double-check nothing in your global gitconfig or a credential helper strips it)
+- [x] Add the remote and push — pushed via the `github-personal` SSH identity (confirmed authenticating as `rj8b0000`); the CLI fell back to HTTPS automatically for the `marketplace add` fetch itself, which worked fine for this public repo
+- [x] Confirm `plugins/foundry-toolkit/node_modules/` actually pushed — verified via the GitHub API and by running the engine directly from Claude Code's real plugin cache after a genuine install (see §3)
 - [ ] Add a repository description and topics (e.g. `claude-code`, `plugin`, `developer-tools`)
 
-## 3. Verify after pushing
+## 3. Verify after pushing — **done, for real, against the live repo**
 
-- [ ] `claude plugin marketplace add rj8b0000/claude-foundary` from a machine that has never touched this code before
-- [ ] `claude plugin install foundry-toolkit@claude-foundary` and confirm all 5 skills load (mirrors the local clean-environment test already run — see CHANGELOG Phase 8 — but this is the first real test of an actual git-hosted fetch, which only pulls the `plugins/foundry-toolkit/` subtree)
-- [ ] Run the example setup session from the README against a real scratch project
-- [ ] `claude plugin update` and `claude plugin uninstall` against the real install
+- [x] `claude plugin marketplace add rj8b0000/claude-foundary` — succeeded
+- [x] `claude plugin install foundry-toolkit@claude-foundary` — all 5 skills loaded (`code-review`, `configure-profiles`, `kiro-workflow`, `setup-project`, `testing`), ~1,034 tok always-on, matching the local numbers exactly
+- [x] Confirmed the real plugin cache (`~/.claude/plugins/cache/claude-foundary/foundry-toolkit/0.1.0/`) contains **only** the plugin subtree — no `tests/`, no root `CONTRIBUTING.md` — proving a real marketplace fetch behaves exactly as the Phase 6 architectural fix assumed, not just as locally simulated
+- [x] Ran `node .../scripts/cli.js detect` directly from that real cache against a fresh temp project — correctly detected Next.js, confirming the vendored `node_modules` survived the actual git clone and cache copy
+- [x] Cleaned up the test install (`marketplace remove`) afterward — `claude plugin list` confirms clean state
+- [ ] `claude plugin update` and `claude plugin uninstall` (as opposed to `marketplace remove`) specifically against this live repo — only the local dev copy's update/uninstall was verified in Phase 7; worth re-running once there's a reason to (e.g. the first real version bump)
+- [ ] Run the example setup session from the README against a real scratch project, end-to-end inside an actual Claude Code session (everything so far was verified via direct CLI/API calls, not through a live session invoking the skills conversationally)
 
 ## 4. Licensing disclosure
 

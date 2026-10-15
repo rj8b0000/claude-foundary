@@ -134,7 +134,7 @@ Everything the plugin needs at runtime (`schemas/`, `scripts/`, `profiles/`, the
 - No deletion capability exists for orphaned files (deliberate scope boundary — a future `prune` command would need its own design and approval gate).
 - No architecture scaffold/template files are generated, only steering-doc guidance.
 - Personal/company-wide preference persistence doesn't exist yet — setup asks fresh each time.
-- The corrected plugin layout (engine inside `plugins/foundry-toolkit/`) has been verified for local installs; it hasn't yet been verified against an actual published GitHub marketplace, since none exists yet.
+- The corrected plugin layout (engine inside `plugins/foundry-toolkit/`) has been verified against the real published GitHub repository: a genuine `marketplace add`/`install` fetch delivers exactly the `plugins/foundry-toolkit/` subtree (no `tests/`, no root docs) with its vendored `node_modules` intact, and the engine runs correctly from Claude Code's actual plugin cache.
 - The optional Windows CMD installer wrapper is not yet built; when it is, it will only have been tested on Windows, since that's the only environment available here.
 - Published at `github.com/rj8b0000/claude-foundary` (note the spelling — see Installation above). A real git-hosted `marketplace add`/`install` from this URL hasn't been re-verified since the initial push; see `RELEASE_CHECKLIST.md`.
 
@@ -148,4 +148,4 @@ See [CONTRIBUTING.md](./CONTRIBUTING.md) for development setup, how to add a pro
 
 ## Release status
 
-Not yet published anywhere. See [RELEASE_CHECKLIST.md](./RELEASE_CHECKLIST.md) for exactly what's left before it can be — including an open naming/trademark question that needs a decision first.
+Published at [github.com/rj8b0000/claude-foundary](https://github.com/rj8b0000/claude-foundary) (v0.1.0). The install commands above have been run for real against this live repository — `marketplace add`, `install` (all 5 skills load), and the engine (`detect`/`plan`/`apply`) running directly from Claude Code's real plugin cache, not just a local simulation. See [RELEASE_CHECKLIST.md](./RELEASE_CHECKLIST.md) for what's still open (repo description/topics, `update`/`uninstall` re-verification against the live install, optional marketplace directory submission).

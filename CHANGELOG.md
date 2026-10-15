@@ -2,6 +2,12 @@
 
 All notable changes to ClaudeFoundry are documented here.
 
+## [0.1.0] — Published
+
+- **Published to GitHub**: [rj8b0000/claude-foundary](https://github.com/rj8b0000/claude-foundary). The repo was created with a typo (`claude-foundary`, not `claude-foundry`) — decided to keep that name rather than rename, and updated every manifest/doc reference (`plugin.json`'s `homepage`/`repository`, `marketplace.json`'s own `name`, README's install/update/uninstall commands and troubleshooting text, `CONTRIBUTING.md`'s clone instructions) to match what's actually there. The plugin's own installable name (`foundry-toolkit`) and the "ClaudeFoundry" display name were never tied to the repo's spelling and are unaffected.
+- **Real remote-marketplace verification, not just local simulation**: `claude plugin marketplace add rj8b0000/claude-foundary` → `claude plugin install foundry-toolkit@claude-foundary` against the actual live repository. All 5 skills loaded (matching the local token-cost numbers exactly). Inspected Claude Code's real plugin cache directly (`~/.claude/plugins/cache/claude-foundary/foundry-toolkit/0.1.0/`) and confirmed it contains only the `plugins/foundry-toolkit/` subtree — no `tests/`, no root docs — then ran `cli.js detect` directly from that real cache against a fresh temp project and got a correct result, proving the vendored `node_modules` survived the actual git clone. This is the final, real-world confirmation of the Phase 6 architectural fix, closing the one limitation Phase 8's local-only clean-environment test couldn't close. Cleaned up the test install afterward.
+- GitHub owner filled in (`rj8b0000`) across `plugin.json`, `marketplace.json`, `LICENSE`, and README, after confirming via a live GitHub API check (not an assumption) that the actual repo name differs from what was initially assumed.
+
 ## [Unreleased]
 
 ### Added (Phase 2 — plugin foundation)
