@@ -1,0 +1,15 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "claude-foundry",
+  "description": "ClaudeFoundry: technology-aware profiles, reusable coding standards, and a spec-driven setup workflow for Claude Code projects. Independent community project, not an official Anthropic product.",
+  "owner": {
+    "name": "rj8b0000"
+  },
+  "plugins": [
+    {
+      "name": "foundry-toolkit",
+      "source": "./plugins/foundry-toolkit",
+      "description": "Interactive, profile-based project setup (technology + capability profiles) and a Kiro-style spec-driven development workflow."
+    }
+  ]
+}

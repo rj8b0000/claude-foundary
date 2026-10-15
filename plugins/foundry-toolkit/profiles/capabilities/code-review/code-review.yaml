@@ -1,0 +1,43 @@
+schemaVersion: "1"
+kind: capability
+name: code-review
+version: 1.0.0
+description: Cross-stack code review standards and the code-review skill. Complements technology profiles rather than duplicating their conventions, and defers to Claude Code's own review tooling for the mechanics of scanning a diff where that tooling is available.
+provides:
+  steeringDocs:
+    - id: code-review-standards
+      path: .claude-foundry/steering/code-review-standards.md
+      content: |
+        # Code review standards
+
+        This supplements the base profile's one-paragraph review expectation
+        with a concrete checklist. Apply it in addition to, not instead of,
+        whatever review tooling (official or otherwise) actually scans the
+        diff in this session.
+
+        Review order, most important first:
+        1. **Correctness** — does it do what it claims, including edge cases
+           and error paths, not just the happy path?
+        2. **Security and privacy** — injection, auth/authorization bypass,
+           secrets, unsafe deserialization, logging of sensitive data.
+        3. **Test coverage** — does new behavior have a test that would fail
+           without the change?
+        4. **Consistency** — does it match this project's existing patterns,
+           or quietly introduce a second way of doing the same thing?
+        5. **Readability and maintainability** — would someone unfamiliar
+           with this change understand why it's written this way?
+
+        For every finding: state the concrete failure scenario (what input or
+        condition triggers it), not just "this could be a problem." Don't
+        rubber-stamp a change because it's small — a one-line change can
+        still introduce a real bug. Don't block on pure style preferences
+        that don't affect correctness, security, or maintainability.
+  rules:
+    - id: code-review-concrete-findings
+      text: "State the concrete failure scenario for every finding, not just that something looks wrong."
+    - id: code-review-no-rubber-stamp
+      text: "Review small changes with the same rigor as large ones; size is not a proxy for risk."
+  skills:
+    - code-review
+overridableComponents:
+  - code-review-no-rubber-stamp

@@ -1,0 +1,39 @@
+schemaVersion: "1"
+kind: fullstack
+name: nextjs-dotnet
+version: 1.0.0
+description: Next.js frontend combined with a .NET backend API. Pulls in both technology profiles and adds only the integration guidance neither one owns alone.
+requires:
+  - nextjs
+  - dotnet
+provides:
+  steeringDocs:
+    - id: fullstack-integration
+      path: .claude-foundry/steering/fullstack-nextjs-dotnet.md
+      content: |
+        # Next.js + .NET integration guidance
+
+        This supplements, and does not repeat, `dotnet-architecture.md` and
+        `nextjs-architecture.md` — read those first for each side on its own.
+
+        Discover how the two sides already talk to each other before
+        proposing a pattern: look for an OpenAPI/Swagger spec and a generated
+        client, a hand-written fetch layer, or a BFF (backend-for-frontend)
+        route inside the Next.js app. Extend whatever's already there.
+
+        Things worth checking explicitly, since they're easy to get wrong
+        across this boundary:
+        - Where the API base URL is configured (environment variables) for
+          local development vs. each deployed environment.
+        - Whether request/response shapes are defined once and shared, or
+          duplicated by hand on each side — duplication here is a common
+          source of drift.
+        - CORS configuration on the .NET side matches the Next.js origins
+          that actually call it.
+        - Authentication: how a session/token issued by one side is validated
+          by the other, and where that logic lives.
+
+        Don't assume a monorepo layout or specific folder names for "the
+        frontend" and "the backend" — confirm the actual layout during setup
+        before referencing paths in generated guidance.
+overridableComponents: []

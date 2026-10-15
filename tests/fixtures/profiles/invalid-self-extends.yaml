@@ -1,0 +1,7 @@
+schemaVersion: "1"
+kind: base
+name: self-extender
+version: 1.0.0
+description: Fixture profile that illegally extends itself.
+extends:
+  - self-extender

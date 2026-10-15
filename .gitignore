@@ -1,0 +1,7 @@
+/node_modules/
+*.log
+.DS_Store
+Thumbs.db
+
+# plugins/foundry-toolkit/node_modules/ is intentionally NOT ignored here:
+# it is vendored and committed, since installing the plugin runs no `npm install`.

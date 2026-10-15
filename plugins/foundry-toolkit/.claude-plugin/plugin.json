@@ -1,0 +1,12 @@
+{
+  "name": "foundry-toolkit",
+  "version": "0.1.0",
+  "description": "Technology-aware profiles, reusable coding standards, and a spec-driven setup workflow for Claude Code projects. Part of the ClaudeFoundry project.",
+  "author": {
+    "name": "rj8b0000"
+  },
+  "homepage": "https://github.com/rj8b0000/claude-foundry",
+  "repository": "https://github.com/rj8b0000/claude-foundry",
+  "license": "MIT",
+  "keywords": ["setup", "profiles", "spec-driven", "dotnet", "nextjs", "code-review", "testing"]
+}

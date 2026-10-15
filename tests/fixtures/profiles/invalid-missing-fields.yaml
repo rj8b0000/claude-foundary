@@ -1,0 +1,6 @@
+kind: base
+name: Bad_Name!
+provides:
+  instructions:
+    - id: x
+      path: CLAUDE.md

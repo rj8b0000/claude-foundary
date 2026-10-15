@@ -1,0 +1,78 @@
+schemaVersion: "1"
+kind: base
+name: base
+version: 1.0.0
+description: Technology-independent standards for maintainability, review, testing, security, debugging, documentation, safe file changes, and approval practices. Recommended for every project; fully overridable.
+provides:
+  instructions:
+    - id: base-standards
+      path: CLAUDE.md
+      content: |
+        # Project instructions (ClaudeFoundry base standards)
+
+        These standards apply regardless of technology stack. Technology- and
+        capability-specific guidance lives under `.claude-foundry/steering/` —
+        check that directory for anything specific to this project's stack.
+        Every standard below can be overridden; edit this file directly and
+        ClaudeFoundry will detect the change and ask before ever replacing it.
+
+        ## Coding conventions and maintainability
+
+        Match the conventions already established in this codebase (naming,
+        file layout, error handling style) before introducing new ones. Prefer
+        small, focused changes over broad rewrites. Don't add abstractions,
+        configuration flags, or generalization for requirements that don't
+        exist yet.
+
+        ## Code review
+
+        Review changes for correctness first, then for consistency with
+        existing patterns. Flag security and data-handling issues regardless
+        of whether they were in scope for the change. Explain *why* something
+        is a problem, not just that it is.
+
+        ## Testing expectations
+
+        New behavior gets a test that would fail without the change. Prefer
+        the test framework and style already used in this project. Report
+        test results honestly — a test that wasn't actually run is not a
+        passing test.
+
+        ## Security and privacy
+
+        Never commit secrets, tokens, or credentials. Validate and sanitize
+        all input at trust boundaries. Don't log sensitive data (credentials,
+        tokens, personal data) even for debugging. Flag anything that looks
+        like an injection, auth bypass, or data-exposure risk even if it's
+        outside the current task.
+
+        ## Debugging methodology
+
+        Reproduce the problem before changing anything. Form a hypothesis,
+        test it with the smallest change that confirms or rules it out, and
+        avoid fixing symptoms without understanding the root cause.
+
+        ## Documentation quality
+
+        Document the *why* for non-obvious decisions, constraints, or
+        workarounds — not what the code already makes clear. Keep
+        documentation next to what it describes and update it alongside the
+        code it documents, not as an afterthought.
+
+        ## Safe file modification
+
+        Preview non-trivial changes before applying them when there's any
+        ambiguity about scope. Never silently overwrite a file a person
+        edited by hand. Prefer reversible operations; confirm before anything
+        destructive (deleting files, force-pushing, dropping data).
+
+        ## Validation and approval practices
+
+        Get explicit approval at meaningful decision points — don't treat
+        silence or a topic change as agreement. Never report a build, test,
+        or deployment as successful unless it was actually run and the result
+        verified.
+  skills:
+    - setup-project
+overridableComponents:
+  - base-standards

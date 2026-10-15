@@ -1,0 +1,57 @@
+schemaVersion: "1"
+kind: technology
+name: dotnet
+version: 1.0.0
+description: .NET and C# conventions, architecture-discovery guidance, and build/test commands. Complements, not duplicates, the base profile.
+detect:
+  - type: file-exists
+    path: "*.sln"
+    confidence: high
+  - type: file-exists
+    path: "*.csproj"
+    confidence: high
+  - type: file-contains
+    path: "*.csproj"
+    pattern: "Microsoft.NET.Sdk.Web"
+    confidence: medium
+provides:
+  steeringDocs:
+    - id: dotnet-architecture
+      path: .claude-foundry/steering/dotnet-architecture.md
+      content: |
+        # .NET architecture guidance
+
+        Discover and preserve this project's existing architecture before
+        proposing anything new. Common styles you may find already in place:
+        Clean Architecture (Domain/Application/Infrastructure/Presentation),
+        traditional N-tier, vertical-slice, or a single-project script-style
+        app. Identify which one is actually used here from the solution and
+        project structure — a `.sln` with multiple layered `.csproj` files is
+        evidence, not proof, of a particular style; read the actual
+        dependencies between projects before naming the pattern.
+
+        When a new architectural decision is genuinely needed (no existing
+        precedent to follow), present the options and trade-offs and wait for
+        approval before generating anything structural.
+  rules:
+    - id: dotnet-naming
+      text: "PascalCase for types, methods, and public properties; camelCase for locals and parameters; _camelCase for private fields."
+    - id: dotnet-nullable
+      text: "Keep nullable reference types enabled where the project already enables them; don't introduce nullable warnings."
+    - id: dotnet-async-naming
+      text: "Suffix asynchronous methods with Async and propagate CancellationToken through async call chains that already accept one."
+    - id: dotnet-file-scoped-namespaces
+      text: "Use file-scoped namespace declarations in new files, matching the project's existing C# language version conventions."
+    - id: dotnet-dependency-injection
+      text: "Register and consume dependencies via constructor injection; avoid service-locator patterns and static singletons for app services."
+    - id: dotnet-exceptions
+      text: "Throw specific exception types for exceptional conditions; don't use exceptions for ordinary control flow."
+    - id: dotnet-testing
+      text: "Use the test framework and mocking library already present in the solution; don't introduce a second one without discussing it first."
+  commands:
+    build: "dotnet build"
+    test: "dotnet test"
+    format: "dotnet format"
+overridableComponents:
+  - dotnet-naming
+  - dotnet-file-scoped-namespaces

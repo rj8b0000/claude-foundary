@@ -1,0 +1,12 @@
+{
+  "name": "foundry-toolkit-engine",
+  "private": true,
+  "type": "module",
+  "version": "0.1.0",
+  "description": "Runtime engine for the foundry-toolkit plugin: profile schema validation, composition, detection, and safe file-write planning. Vendored (node_modules committed) because Claude Code plugin installation has no npm-install step — these dependencies must already be present wherever the plugin is loaded from.",
+  "dependencies": {
+    "ajv": "^8.17.1",
+    "ajv-formats": "^3.0.1",
+    "js-yaml": "^4.1.0"
+  }
+}

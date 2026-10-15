@@ -1,0 +1,24 @@
+schemaVersion: "1"
+kind: custom
+name: acme-company-standards
+version: 1.0.0
+description: Example user-defined profile — a company overriding one base standard without touching ClaudeFoundry's own source.
+extends:
+  - base
+provides:
+  instructions:
+    - id: base-standards
+      path: CLAUDE.md
+      content: |
+        # Project instructions (Acme Corp standards)
+
+        This project follows Acme Corp's internal engineering handbook in
+        addition to ClaudeFoundry's usual base standards. See the internal
+        wiki for the full handbook; the summary that matters most here:
+        all database migrations require a second reviewer, and no PR merges
+        without a passing security scan.
+  rules:
+    - id: acme-commit-style
+      text: "Commit messages follow Acme's format: <ticket-id>: <summary>."
+overridableComponents:
+  - acme-commit-style

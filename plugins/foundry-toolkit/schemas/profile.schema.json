@@ -1,0 +1,138 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://claude-foundry/schemas/profile.schema.json",
+  "title": "ClaudeFoundry profile",
+  "description": "A declarative, composable unit of coding standards, steering documents, skills, agents, and commands that ClaudeFoundry can apply to a project.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "kind", "name", "version", "description"],
+  "properties": {
+    "schemaVersion": {
+      "type": "string",
+      "const": "1",
+      "description": "Version of the profile schema itself, not the profile's own version. Bump only when this schema changes incompatibly."
+    },
+    "kind": {
+      "type": "string",
+      "enum": ["base", "technology", "capability", "fullstack", "custom"]
+    },
+    "name": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
+      "description": "Kebab-case, unique within the profile library (or within the project for a custom profile)."
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$",
+      "description": "Semantic version of this profile."
+    },
+    "description": {
+      "type": "string",
+      "minLength": 1
+    },
+    "extends": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/profileRef" },
+      "description": "Parent profile(s) whose `provides` this profile inherits. A field this profile also defines overrides the parent's; fields it omits are inherited unchanged."
+    },
+    "requires": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/profileRef" },
+      "description": "Other profiles that must also be applied whenever this one is selected. The composer includes them automatically and records why."
+    },
+    "conflictsWith": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/profileRef" },
+      "description": "Profiles that cannot be selected together with this one. The composer refuses to silently pick a winner and reports the conflict for the user to resolve."
+    },
+    "detect": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/detectIndicator" },
+      "description": "Advisory evidence only. Indicators raise or lower confidence that a project uses this profile's technology; they are never treated as conclusive proof on their own."
+    },
+    "provides": { "$ref": "#/$defs/provides" },
+    "overridableComponents": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Component ids (instruction/steeringDoc/rule ids) that a user is explicitly allowed to override without that being flagged as tampering."
+    }
+  },
+  "$defs": {
+    "profileRef": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(-[a-z0-9]+)*(@\\d+\\.\\d+\\.\\d+)?$",
+      "description": "A profile name, optionally pinned to a version with @major.minor.patch."
+    },
+    "detectIndicator": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "confidence"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["file-exists", "file-contains", "package-dependency"]
+        },
+        "path": { "type": "string" },
+        "pattern": { "type": "string" },
+        "dependency": { "type": "string" },
+        "confidence": {
+          "type": "string",
+          "enum": ["low", "medium", "high"]
+        }
+      }
+    },
+    "provides": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "instructions": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/namedTarget" }
+        },
+        "steeringDocs": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/namedTarget" }
+        },
+        "rules": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/rule" }
+        },
+        "skills": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "agents": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "commands": {
+          "type": "object",
+          "additionalProperties": { "type": "string" },
+          "description": "Build/test/lint/validate commands this profile contributes, e.g. { \"build\": \"dotnet build\", \"test\": \"dotnet test\" }. Kept namespaced per profile by the composer, so same-named commands from different technologies in a full-stack composition never collide."
+        }
+      }
+    },
+    "namedTarget": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "path", "content"],
+      "properties": {
+        "id": { "type": "string" },
+        "path": {
+          "type": "string",
+          "description": "Target file path, relative to the consuming project's root."
+        },
+        "content": { "type": "string" }
+      }
+    },
+    "rule": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "text"],
+      "properties": {
+        "id": { "type": "string" },
+        "text": { "type": "string" }
+      }
+    }
+  }
+}

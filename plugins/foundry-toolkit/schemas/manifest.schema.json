@@ -1,0 +1,61 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://claude-foundry/schemas/manifest.schema.json",
+  "title": "ClaudeFoundry project manifest",
+  "description": "Written to .claude-foundry/manifest.json in a project ClaudeFoundry has configured. Tracks exactly what was generated so re-running setup never silently overwrites a user's edits. Contains no credentials, tokens, or project data beyond what is needed to manage generated files.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "generatedAt", "profiles", "files"],
+  "properties": {
+    "schemaVersion": { "type": "string", "const": "1" },
+    "generatedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "profiles": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "version"],
+        "properties": {
+          "name": { "type": "string" },
+          "version": { "type": "string" },
+          "includedBecause": {
+            "type": "string",
+            "enum": ["selected", "required-by-dependency", "extended-by-another"],
+            "description": "Why this profile is part of the applied set, for transparency when re-running setup."
+          }
+        }
+      }
+    },
+    "files": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["path", "sha256", "generatedBy"],
+        "properties": {
+          "path": {
+            "type": "string",
+            "description": "File path relative to the project root."
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$",
+            "description": "Hash of the file's content as last written by ClaudeFoundry, used to detect a user edit before any future overwrite."
+          },
+          "generatedBy": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["profile", "componentId"],
+            "properties": {
+              "profile": { "type": "string" },
+              "componentId": { "type": "string" }
+            }
+          }
+        }
+      }
+    }
+  }
+}

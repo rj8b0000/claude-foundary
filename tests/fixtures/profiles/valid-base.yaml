@@ -1,0 +1,21 @@
+schemaVersion: "1"
+kind: base
+name: base-minimal
+version: 1.0.0
+description: Minimal fixture base profile used by tests.
+detect:
+  - type: file-exists
+    path: "."
+    confidence: low
+provides:
+  instructions:
+    - id: base-conventions
+      path: CLAUDE.md
+      content: "# Base conventions\n\nWrite tests for new behavior.\n"
+  rules:
+    - id: indentation
+      text: "Use 2-space indentation."
+  skills:
+    - setup-project
+overridableComponents:
+  - indentation

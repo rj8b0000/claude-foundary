@@ -1,0 +1,41 @@
+schemaVersion: "1"
+kind: capability
+name: testing
+version: 1.0.0
+description: Cross-stack testing standards and the testing skill. Complements technology profiles' existing build/test commands rather than redefining them — this profile never sets its own `commands`.
+provides:
+  steeringDocs:
+    - id: testing-strategy
+      path: .claude-foundry/steering/testing-strategy.md
+      content: |
+        # Testing strategy
+
+        This supplements the base profile's one-paragraph testing expectation
+        with the specifics. It applies regardless of stack — read the
+        relevant technology steering doc for framework-specific conventions.
+
+        - Favor a healthy mix weighted toward fast unit tests, with
+          integration tests on the paths that actually break in practice
+          (auth, payments, data integrity) — not an arbitrary line-count or
+          percentage target.
+        - Test behavior, not implementation. A refactor that doesn't change
+          behavior shouldn't need the tests to change.
+        - Name tests after the behavior they verify, not the method under
+          test (`rejects an expired token`, not `test_validateToken_2`).
+        - Keep tests deterministic: control time, randomness, and network
+          calls explicitly rather than depending on real ones.
+        - A skipped or disabled test needs a comment saying why and, ideally,
+          a tracked follow-up — never leave one silently skipped.
+        - Before reporting a task done, actually run the tests it affects and
+          report the real result. "Should pass" is not a result.
+  rules:
+    - id: testing-coverage-new-behavior
+      text: "New behavior gets a test that would fail without the change. Prefer the test framework and style already used in this project."
+    - id: testing-no-silent-skips
+      text: "A skipped or disabled test must say why in a comment; don't leave one silently skipped."
+    - id: testing-determinism
+      text: "Tests must not depend on real time, randomness, or network calls without controlling them explicitly."
+  skills:
+    - testing
+overridableComponents:
+  - testing-coverage-new-behavior

@@ -1,0 +1,57 @@
+schemaVersion: "1"
+kind: technology
+name: nextjs
+version: 1.0.0
+description: Next.js and React conventions, architecture-discovery guidance, and build/test commands. Complements, not duplicates, the base profile.
+detect:
+  - type: package-dependency
+    dependency: "next"
+    confidence: high
+  - type: file-exists
+    path: "next.config.js"
+    confidence: medium
+  - type: file-exists
+    path: "next.config.ts"
+    confidence: medium
+  - type: file-exists
+    path: "app"
+    confidence: low
+provides:
+  steeringDocs:
+    - id: nextjs-architecture
+      path: .claude-foundry/steering/nextjs-architecture.md
+      content: |
+        # Next.js architecture guidance
+
+        Determine which router this project actually uses — App Router
+        (`app/`) or Pages Router (`pages/`) — from what's really there, and
+        match it. Don't mix both in new code. An `app/` directory is evidence
+        of App Router, but confirm there isn't a legacy `pages/` directory
+        still doing real work before assuming the whole project has migrated.
+
+        Discover the existing data-fetching and state-management approach
+        (server actions, a client-side fetching library, a particular state
+        manager) and extend it rather than introducing a second approach for
+        new features. When a genuinely new architectural decision is needed,
+        present the options and trade-offs and wait for approval before
+        generating anything structural.
+  rules:
+    - id: nextjs-component-naming
+      text: "PascalCase for component files and their default export; colocate a component's tests and styles next to it where the project already does so."
+    - id: nextjs-server-vs-client
+      text: "Default to Server Components; add \"use client\" only where interactivity or browser-only APIs require it."
+    - id: nextjs-routing-preservation
+      text: "Match the router convention already in the project (App Router or Pages Router) rather than introducing the other one."
+    - id: nextjs-data-fetching
+      text: "Fetch data on the server where the existing pattern allows it; avoid a redundant client-side fetch for data already available server-side."
+    - id: nextjs-typescript
+      text: "Write new files in TypeScript when the project already uses TypeScript elsewhere."
+    - id: nextjs-state-management
+      text: "Use the state-management approach already established in the project before introducing a new one."
+  commands:
+    build: "next build"
+    dev: "next dev"
+    lint: "next lint"
+overridableComponents:
+  - nextjs-component-naming
+  - nextjs-state-management

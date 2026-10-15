@@ -1,0 +1,13 @@
+{
+  "name": "claude-foundry-dev",
+  "private": true,
+  "type": "module",
+  "version": "0.1.0",
+  "description": "Development tooling for the ClaudeFoundry repo: runs the test suite against the engine that actually ships inside plugins/foundry-toolkit/. This package itself declares no dependencies of its own — the engine's dependencies live in plugins/foundry-toolkit/package.json (vendored) and resolve for tests too, since Node resolves node_modules from the nearest ancestor directory.",
+  "scripts": {
+    "test": "node --test tests/*.test.js",
+    "validate-profile": "node plugins/foundry-toolkit/scripts/cli.js validate-profile",
+    "compose": "node plugins/foundry-toolkit/scripts/cli.js compose",
+    "validate:profiles": "node plugins/foundry-toolkit/scripts/cli.js validate-library plugins/foundry-toolkit/profiles"
+  }
+}
