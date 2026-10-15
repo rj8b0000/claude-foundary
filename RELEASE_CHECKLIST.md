@@ -29,7 +29,7 @@ When the repository was created, it was named `claude-foundary` (an extra "a") r
 - [x] Create the GitHub repository — created as `rj8b0000/claude-foundary` (see 0.1 above)
 - [x] Add the remote and push — pushed via the `github-personal` SSH identity (confirmed authenticating as `rj8b0000`); the CLI fell back to HTTPS automatically for the `marketplace add` fetch itself, which worked fine for this public repo
 - [x] Confirm `plugins/foundry-toolkit/node_modules/` actually pushed — verified via the GitHub API and by running the engine directly from Claude Code's real plugin cache after a genuine install (see §3)
-- [ ] Add a repository description and topics (e.g. `claude-code`, `plugin`, `developer-tools`)
+- [x] Add a repository description and topics — set via the GitHub web UI and verified via the public API: description present, topics `claude-code`, `claude-code-plugin`, `coding-standards`, `developer-tools`, `dotnet`, `nextjs`, `spec-driven-development`
 
 ## 3. Verify after pushing — **done, for real, against the live repo**
 
