@@ -1,6 +1,6 @@
 ---
 name: configure-dotnet-project
-description: Use this skill when configuring a .NET project (new or existing) to match this organization's established .NET engineering standards — layering/architecture, the Contracts folder convention, DI registration via Add*Services()/Add*Repositories() extension methods, Central Package Management, async/cancellation rules, ILogger-only logging, and structural-enforcement tests — derived from the Aldo OMS project's steering documentation. .NET only: it always applies exactly `base` + `dotnet` + `dotnet-standards` (plus the cross-stack `testing`/`code-review` capabilities on request) and never selects, recommends, or considers Next.js, JavaScript, or any other technology profile. For a project that also has a non-.NET part, use `setup-project`/`configure-profiles` instead, or scope this skill explicitly to the .NET sub-project only.
+description: Use this skill when configuring a .NET project (new or existing) to match this organization's established .NET engineering standards — layering/architecture, the Contracts folder convention, DI registration via Add*Services()/Add*Repositories() extension methods, Central Package Management, async/cancellation rules, ILogger-only logging, structural-enforcement tests, and a generated Postman collection kept in sync with the controllers — derived from the Aldo OMS project's steering documentation. .NET only: it always applies exactly `base` + `dotnet` + `dotnet-standards` (plus the cross-stack `testing`/`code-review` capabilities on request) and never selects, recommends, or considers Next.js, JavaScript, or any other technology profile. For a project that also has a non-.NET part, use `setup-project`/`configure-profiles` instead, or scope this skill explicitly to the .NET sub-project only.
 ---
 
 # ClaudeFoundry: Configure a .NET project
@@ -106,3 +106,31 @@ Omit `--force` unless the user explicitly approved those exact paths. Report exa
 was written, what was skipped and why, and restate the gap list from step 2 as the
 project's remaining work — this skill documents and governs the standard, it does not
 silently refactor existing code to match it.
+
+## 5. Generate and maintain the Postman collection
+
+`dotnet-standards` writes `.claude-foundry/steering/dotnet-postman-collection.md` in step 4
+— follow it for the full workflow and the rules it links to (`dotnet-standards-postman-*`
+in `rules.md`). The short version, once the engine's writes are applied:
+
+- **New project / first time this step runs:** confirm an OpenAPI document exists
+  (Swashbuckle, NSwag, or `Microsoft.AspNetCore.OpenApi`); if none does, that's a
+  prerequisite gap — present it and get approval before adding minimal OpenAPI middleware,
+  the same as any other structural gap from step 2. Then load the `postman:bootstrap` skill
+  to resolve CLI/workspace setup, `postman:api-documentation` to generate the collection
+  from that OpenAPI document (`postman spec generate collection`), `postman:variables` to
+  wire up the bearer-token capture script and create the local/production environments, and
+  `postman:collection-schema-v3` for any direct edits the generator doesn't cover.
+- **Existing project, controllers changed in this session:** don't treat the collection as
+  a separate follow-up — regenerate the OpenAPI document and re-run
+  `postman spec generate collection ... --force` against the same collection path in the
+  same turn as the controller change. This updates added/changed actions in place, but it
+  does **not** delete anything: for a removed action, explicitly delete its leftover request
+  file (and paired `.resources/` folder) yourself — verified by testing this against a real
+  project, `--force` alone leaves a stale request behind.
+- Report what you actually generated or updated (collection path, environments touched) the
+  same way step 4 reports what was written — don't claim the collection is in sync without
+  having regenerated and inspected it.
+
+If the Postman CLI isn't available in this environment, flag it as a gap (per
+`postman:bootstrap`'s installation guidance) rather than skipping the feature silently.

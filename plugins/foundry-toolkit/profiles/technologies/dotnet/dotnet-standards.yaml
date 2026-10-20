@@ -121,6 +121,86 @@ provides:
         - [ ] Build and the affected tests pass — actually run, not assumed.
         - [ ] An EF schema change ships with a migration and a synchronized
               model snapshot.
+        - [ ] The local Postman collection reflects the current controller
+              actions — no missing, duplicated, or orphaned requests.
+    - id: dotnet-postman-collection
+      path: .claude-foundry/steering/dotnet-postman-collection.md
+      content: |
+        # Postman collection: generation and maintenance
+
+        A Postman collection for this API is a generated artifact, not a
+        hand-authored one — the OpenAPI document produced from the
+        controllers is the source of truth, and the collection is kept in
+        sync with it. This uses the organization's standard Postman skills
+        rather than reimplementing collection authoring here; reach for them
+        by name as each step needs them.
+
+        ## Generating the collection
+
+        1. Confirm the project exposes an OpenAPI document (Swashbuckle,
+           NSwag, or `Microsoft.AspNetCore.OpenApi`, whichever the project
+           already uses). If none exists yet, that's a prerequisite gap —
+           flag it and get approval before adding minimal OpenAPI middleware;
+           don't generate a collection by reading controller source directly.
+        2. Use **bootstrap** to confirm the Postman CLI is available and the
+           repo has a local Postman project (`.postman/resources.yaml`); it
+           resolves setup once, future runs can skip it.
+        3. Use **api-documentation**'s spec-to-collection flow —
+           `postman spec generate collection <openapi-path> -n "<name> API"`
+           — targeting the existing collection path so entities update in
+           place. Inspect the result before replacing anything: hand-added
+           scripts, examples, and assertions carry knowledge the generator
+           doesn't know about and must be preserved, not clobbered.
+        4. Collection files are v3, Git-native entities under `postman/` —
+           see **collection-schema-v3** before hand-editing any of them
+           directly (e.g. to wire up auth below).
+
+        ## Bearer token authentication
+
+        - Set auth at the collection (or, if endpoints differ, folder) level
+          to bearer type, referencing a variable such as `{{accessToken}}` —
+          never a literal token value in a request.
+        - Keep (or add) one login/token request whose test script captures
+          the returned token into a collection or environment variable
+          (`pm.collectionVariables.set("accessToken", ...)` or
+          `pm.environment.set(...)`, chosen deliberately per **variables**),
+          so every other request inherits a working token automatically.
+        - A refresh-token endpoint, if the API has one, follows the same
+          capture pattern so the collection can re-authenticate without
+          manual steps.
+
+        ## Environments
+
+        - Maintain two Postman environments: one for local development and
+          one for production, each with its own `base_url` (and any other
+          environment-specific variable) — see **variables** for creating
+          them (`postman environment new`, `postman environment var set`).
+        - Local's `base_url` matches the project's dev launch URL
+          (`launchSettings.json` / `appsettings.Development.json`).
+        - Never put a literal production credential or token into a
+          committed environment file — reference a Postman vault secret
+          instead (see **variables**'s secret-reference workflow).
+
+        ## Keeping it in sync
+
+        - Whenever a controller action is added, changed, or removed:
+          regenerate the OpenAPI document, then re-run
+          `postman spec generate collection ... --force` against the same
+          collection path so added and changed actions land as in-place
+          updates, not duplicates.
+        - `--force` only adds and updates — it does not delete. A request for
+          an action that no longer exists in the OpenAPI document is left
+          behind as a stale file; regeneration alone does not remove it. After
+          regenerating, diff the collection's requests against the current
+          controller actions and delete any request (and its paired
+          `.resources/<request-name>.resources/` folder) for an action that
+          was removed — don't assume the generator did this for you.
+        - Run `postman collection lint` (and `postman environment lint` for
+          environment changes) after regenerating, and treat the controller
+          change, the regeneration, and the orphan check as one unit of
+          work — not a follow-up to get to later.
+        - For catching drift automatically (a merged controller change with
+          no matching collection update), see **ci-integration**.
   rules:
     - id: dotnet-standards-layering
       text: "Keep a strict one-directional dependency flow (presentation → services → repository → database/entity); never let a controller touch the DbContext, an HTTP client, or a third-party SDK directly."
@@ -134,8 +214,17 @@ provides:
       text: "Centralize package versions in `Directory.Packages.props`; `.csproj` files reference packages without a `Version` attribute."
     - id: dotnet-standards-structural-enforcement
       text: "Encode non-negotiable architectural rules (layering, no inline SDK construction, mapper purity, append-only audit, tenant scoping) as automated structural tests, not documentation alone."
+    - id: dotnet-standards-postman-source-of-truth
+      text: "Generate the Postman collection from the project's OpenAPI document (`postman spec generate collection`); don't hand-author requests from controller code."
+    - id: dotnet-standards-postman-sync
+      text: "Whenever a controller action is added, changed, or removed, regenerate the OpenAPI document and re-run `postman spec generate collection --force` against the existing collection path in the same unit of work; then explicitly delete the request file for any action no longer in the spec — regeneration adds and updates but never deletes, so a removed action leaves a stale request behind unless you remove it yourself."
+    - id: dotnet-standards-postman-auth
+      text: "Configure collection auth as a bearer token referencing a variable (e.g. `{{accessToken}}`) captured by a login/token request's test script; never hardcode a token value into a request."
+    - id: dotnet-standards-postman-environments
+      text: "Maintain separate local and production Postman environments with their own `base_url`; reference Postman vault secrets for credentials instead of committing literal values."
   skills:
     - configure-dotnet-project
 overridableComponents:
   - dotnet-standards-central-package-management
   - dotnet-standards-structural-enforcement
+  - dotnet-standards-postman-environments
