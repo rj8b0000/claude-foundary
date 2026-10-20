@@ -1,0 +1,141 @@
+schemaVersion: "1"
+kind: technology
+name: dotnet-standards
+version: 1.0.0
+description: Organization .NET engineering standards (layering, DI registration, Central Package Management, async/logging rules, structural-enforcement tests) that supplement the base dotnet profile rather than repeating it. .NET only — never selected alongside or in place of a non-.NET technology profile.
+requires:
+  - dotnet
+provides:
+  steeringDocs:
+    - id: dotnet-engineering-standards
+      path: .claude-foundry/steering/dotnet-engineering-standards.md
+      content: |
+        # .NET engineering standards (house style)
+
+        This supplements `dotnet-architecture.md` — read that first for the
+        per-project architecture-discovery guidance. This document is
+        prescriptive where `dotnet-architecture.md` is discovery-oriented:
+        these are standards to converge toward, not just patterns to
+        identify. Discover whether they're already in place before adding
+        anything new, and treat a gap as something to flag, not something to
+        silently fix as an unrelated side effect of other work.
+
+        ## Layering and dependency direction
+
+        Enforce a strict, one-directional dependency flow:
+
+        ```
+        Presentation (API controllers / web UI)
+                |
+                v
+           Services        (business logic, use-case orchestration)
+                |
+                v
+          Repository        (data access only)
+                |
+                v
+        Database / Entity   (persistence model)
+
+        Model / Shared / contract interfaces = cross-cutting, referenced by
+        any layer
+        ```
+
+        - A controller or UI layer never talks to the database context, an
+          HTTP client, or a third-party SDK directly — only to a service.
+        - A repository never calls another repository, an HTTP client, or an
+          external SDK — only the database.
+        - No skipping a layer "just this once." If an existing module already
+          skips layers, flag it as a known gap rather than copying the
+          pattern into new code.
+
+        ## Interfaces and dependency injection
+
+        - Every service/repository interface lives in a `Contracts/`
+          subfolder of the project that defines it; depend on the interface,
+          not the implementation.
+        - Register implementations through a per-project `AddServices()` /
+          `AddRepositories()` (or equivalently named) extension method,
+          called once from the composition root — don't scatter
+          `services.AddScoped<...>()` calls across `Program.cs`.
+        - Constructor injection only. Never inject `IServiceProvider` or
+          another service locator to resolve a dependency at call time.
+
+        ## Async and cancellation
+
+        - Public data-access and integration methods are `async` and accept
+          (and propagate) a `CancellationToken` through the call chain.
+        - Never use `.Result`, `.Wait()`, or `.GetAwaiter().GetResult()` in
+          service or repository code — that's a sync-over-async deadlock
+          risk, not a shortcut.
+
+        ## Logging
+
+        - Log exclusively through an injected `ILogger<T>` — never
+          `Console.WriteLine` — in service or repository code.
+        - Log exceptions with the exception-object overload
+          (`LogError(ex, "message", args)`), not by interpolating
+          `ex.Message` into the template.
+
+        ## Package and dependency management
+
+        - Centralize every package version in `Directory.Packages.props`
+          (Central Package Management). Individual `.csproj` files reference
+          packages with `<PackageReference Include="..." />` and no
+          `Version` attribute.
+
+        ## Database and API naming boundary
+
+        - Keep the API/DTO boundary and the database boundary on their own
+          consistent naming convention each (e.g. camelCase JSON over a
+          snake_case-configured EF model) — never mix both conventions
+          within a single boundary, and never let the database's column
+          casing leak into the API contract or vice versa.
+
+        ## Structural enforcement
+
+        - Encode the architectural rules that actually matter (layering, no
+          inline SDK/HTTP client construction outside its designated
+          factory, mapper purity, append-only audit tables, tenant/scope
+          isolation) as automated structural tests — reflection-based or a
+          library such as NetArchTest — not just as documentation a reviewer
+          might miss. A rule without a test behind it will eventually be
+          violated.
+        - If the project is multi-tenant, thread the tenant/scope key
+          through every service and repository call and enforce it with a
+          property or structural test (don't assume multi-tenancy if
+          there's no evidence of it in the project).
+
+        ## Definition of done for a module
+
+        - [ ] Responsibilities match the target layer; no layer skips.
+        - [ ] No inline SDK/HTTP client construction in business code — only
+              through its designated factory/abstraction.
+        - [ ] Mappers are pure and stateless — no injected dependencies, no
+              I/O.
+        - [ ] Async end-to-end; no `.Result` / `.Wait()`.
+        - [ ] `ILogger<T>` used; no swallowed exceptions; no
+              `Console.WriteLine`.
+        - [ ] Dependencies registered once via the `Add*` extension;
+              interfaces in `Contracts/`.
+        - [ ] A consistent response envelope at the controller boundary.
+        - [ ] Build and the affected tests pass — actually run, not assumed.
+        - [ ] An EF schema change ships with a migration and a synchronized
+              model snapshot.
+  rules:
+    - id: dotnet-standards-layering
+      text: "Keep a strict one-directional dependency flow (presentation → services → repository → database/entity); never let a controller touch the DbContext, an HTTP client, or a third-party SDK directly."
+    - id: dotnet-standards-contracts-folder
+      text: "Put every service/repository interface in a `Contracts/` subfolder of its project; depend on the interface, not the concrete type."
+    - id: dotnet-standards-di-extension-methods
+      text: "Register implementations through a per-project `AddServices()`/`AddRepositories()` extension method rather than scattering registrations across the composition root."
+    - id: dotnet-standards-async-cancellation
+      text: "Public data-access and integration methods are async and propagate a CancellationToken through the call chain."
+    - id: dotnet-standards-central-package-management
+      text: "Centralize package versions in `Directory.Packages.props`; `.csproj` files reference packages without a `Version` attribute."
+    - id: dotnet-standards-structural-enforcement
+      text: "Encode non-negotiable architectural rules (layering, no inline SDK construction, mapper purity, append-only audit, tenant scoping) as automated structural tests, not documentation alone."
+  skills:
+    - configure-dotnet-project
+overridableComponents:
+  - dotnet-standards-central-package-management
+  - dotnet-standards-structural-enforcement
